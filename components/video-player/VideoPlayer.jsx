@@ -1,9 +1,21 @@
-import React, { useState } from 'react'
-import { VolumeOffIcon, VolumeUpIcon } from '@heroicons/react/solid'
+import React, { useRef, useState } from 'react'
+import { VolumeOffIcon, VolumeUpIcon, PlayIcon, PauseIcon } from '@heroicons/react/solid'
 
 const VideoPlayer = ({ src, autoPlay, loop, title }) => {
 
     const [muted, setMuted] = useState(true)
+    const [pause, setPause] = useState(false)
+
+    const videoRef = useRef(null)
+
+    const togglePause = () => {
+      if(pause) {
+        videoRef.current.play()
+      } else {
+        videoRef.current.pause()
+      }
+      setPause(!pause)
+    }
 
     return (
         <div className="relative shadow-xl">
@@ -12,6 +24,7 @@ const VideoPlayer = ({ src, autoPlay, loop, title }) => {
             autoPlay={autoPlay}
             muted={muted}
             loop={loop}
+            ref={videoRef}
           />
           <div className="absolute flex items-end top-0 left-0 w-full h-full"> 
             <div style={{height: '80px'}} className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black to-transparent"></div>
@@ -21,7 +34,14 @@ const VideoPlayer = ({ src, autoPlay, loop, title }) => {
                   <div className="sm:flex flex-column sm:flex-row items-center shadow">
                     <Title title={title} />
                   </div>
-                  <div>
+                  <div className="flex items-center">
+                    <button onClick={togglePause} className="w-5 lg:w-8 cursor-pointer mr-2 md:mr-4">
+                      {pause ? (
+                        <PlayIcon />
+                      ) : (
+                        <PauseIcon />
+                      )}
+                    </button>
                     <Volume muted={muted} setMuted={() => setMuted(!muted)} />
                   </div>     
               </div>
@@ -43,12 +63,12 @@ const Title = ({ title }) => {
 
 const Volume = ({ muted, setMuted }) => {
     return (
-        <div className="w-5 lg:w-8 cursor-pointer">
-            {muted ? 
-                <VolumeOffIcon color="white" onClick={() => setMuted(false)} /> : 
-                <VolumeUpIcon color="white" onClick={() => setMuted(true)} />
-            }
-        </div>
+        <button onClick={setMuted} className="w-5 lg:w-8 cursor-pointer">
+          {muted ? 
+              <VolumeOffIcon color="white" /> : 
+              <VolumeUpIcon color="white" />
+          }
+        </button>
     )
 }
 
